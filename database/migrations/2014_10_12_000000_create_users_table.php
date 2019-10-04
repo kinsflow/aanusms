@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('matric_no');
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('role_id');
+            $table->string('role_id')->default(2);
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
