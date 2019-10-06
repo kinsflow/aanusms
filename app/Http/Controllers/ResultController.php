@@ -35,7 +35,18 @@ class ResultController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+        $store = Result::create([
+            'matric_no' => $input['matric_no'],
+            'course_code' => $input['course_code'],
+            'test' => $input['test'],
+            'exam' => $input['exam'],
+            'session' => $input['session'],
+            'semester' => $input['semester'],
+        ]);
+        if($store){
+            return redirect()->back()->with('flash', 'result successfully uploaded');
+        }
     }
 
     /**

@@ -19,8 +19,8 @@ class CreateResultsTable extends Migration
             $table->string('course_code');
             $table->integer('test');
             $table->integer('exam');
-            // $table->integer('semester');
-            // $table->integer('session');
+            $table->integer('semester');
+            $table->integer('session');
             $table->timestamps();
         });
     }
