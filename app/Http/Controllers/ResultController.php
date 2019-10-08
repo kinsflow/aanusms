@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Result;
+use App\User;
 use Illuminate\Http\Request;
-
+use Twilio\Rest\Client;
 class ResultController extends Controller
 {
     /**
@@ -36,6 +37,10 @@ class ResultController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
+        $number = User::where('matric_no', $input['matric_no'])->pluck('number')->first();
+        $recipients = '+234'.intval($number);
+        $message = ' your result for year '.$input['session'].', '.$input['semester'].' semester is '.$input['exam']+$input['test'];
+        dd(env("TWILIO_SID"));
         $store = Result::create([
             'matric_no' => $input['matric_no'],
             'course_code' => $input['course_code'],
@@ -44,7 +49,11 @@ class ResultController extends Controller
             'session' => $input['session'],
             'semester' => $input['semester'],
         ]);
+
+
+
         if($store){
+            $this->sendMessage($message, $recipients);
             return redirect()->back()->with('flash', 'result successfully uploaded');
         }
     }
@@ -93,4 +102,15 @@ class ResultController extends Controller
     {
         //
     }
+
+    private function sendMessage($message, $recipients)
+    {
+    $account_sid = 'ACb6324caf4877ebe8a3064d347a1955de';
+    $auth_token = '35c0a445a1efc2613315458463f01ff7';
+    $twilio_number = '+15138029723';
+    $client = new Client($account_sid, $auth_token);
+    $client->messages->create($recipients,
+            ['from' => $twilio_number, 'body' => $message] );
+    }
+
 }

@@ -14,7 +14,9 @@
                         <th>Exam</th>
                         <th>Total</th>
                         <th>Session</th>
+                        <th>Number</th>
                         <th>Semester</th>
+                        <th>Grade</th>
                         <th>Time Uploaded</th>
                         <th>
                       </tr>
@@ -27,7 +29,25 @@
                             <td>{{ $result->exam }}</td>
                             <td>{{ $result->test + $result->exam }}</td>
                             <td>{{ $result->session }}</td>
+                            <td>{{ auth()->user()->number }}</td>
                             <td>{{ $result->semester  == 1 ? 'first semester' : 'second semester' }}</td>
+                            <td>
+                                @if(($result->test + $result->exam) < 45)
+
+                                   F
+                                @elseif(($result->test + $result->exam) >=45 && ($result->test + $result->exam)<50)
+                                    D
+                                @elseif (($result->test + $result->exam) >=50 && ($result->test + $result->exam)<60)
+                                    C
+
+                                @elseif (($result->test + $result->exam) >=60 && ($result->test + $result->exam)<70)
+                                    B
+                                @elseif (($result->test + $result->exam) >=70 && ($result->test + $result->exam))
+                                    A
+                                @else
+                                   F
+                                @endif
+                            </td>
                             <td>{{ $result->updated_at ? $result->updated_at->toDayDateTimeString() : 'upload time was not captured' }}</td>
                         </tr>
                         @endforeach
