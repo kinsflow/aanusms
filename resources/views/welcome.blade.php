@@ -12,7 +12,7 @@
         <!-- Styles -->
         <style>
             html, body {
-                background-image: linear-gradient(red, yellow);
+                {{--  background-image: linear-gradient(red, yellow);  --}}
                 color: #636b6f;
                 font-family: 'Nunito', sans-serif;
                 font-weight: 200;
@@ -38,8 +38,25 @@
                 position: absolute;
                 right: 10px;
                 top: 18px;
+                {{--  border-bottom: 2px solid peachpuff;  --}}
+            }
+            .span{
+                font-size: 18px;
+                font-family: 'Courier New', Courier, monospace;
+                font-weight: bold;
+                position: absolute;
+                left: 200px;
+            }
+            .top-left {
+                position: absolute;
+                left: 10px;
+                top: 18px;
+                {{--  border-bottom: 2px solid peachpuff;  --}}
             }
 
+            .top{
+                border-bottom: 2px solid peachpuff;
+            }
             .content {
                 text-align: center;
             }
@@ -65,6 +82,10 @@
     </head>
     <body>
         <div class="flex-center position-ref full-height">
+            <div class="top">
+            <div class="top-left">
+                <img src="{{ asset('images/eksu.png') }}" alt="eksu logo" srcset="">
+            </div>
             @if (Route::has('login'))
                 <div class="top-right links">
                     @auth
@@ -78,14 +99,15 @@
                     @endauth
                 </div>
             @endif
-
+        </div>
             <div class="content">
                 <div class="title m-b-md">
                     SMS RESULT DISSEMINATION
                 </div>
+                <span class="span">By Engr. Aanu</span>
 
                 <div class="links">
-                  
+
                 </div>
             </div>
         </div>

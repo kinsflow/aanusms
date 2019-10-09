@@ -6,6 +6,9 @@ use App\Result;
 use App\User;
 use Illuminate\Http\Request;
 use Twilio\Rest\Client;
+use Twilio\TwiML\MessagingResponse;
+
+
 class ResultController extends Controller
 {
     /**
@@ -39,8 +42,25 @@ class ResultController extends Controller
         $input = $request->all();
         $number = User::where('matric_no', $input['matric_no'])->pluck('number')->first();
         $recipients = '+234'.intval($number);
-        $message = ' your result for year '.$input['session'].', '.$input['semester'].' semester is '.$input['exam']+$input['test'];
-        dd(env("TWILIO_SID"));
+
+        $grade = '';
+        if(($input['test'] + $input['exam']) >= 40 && (($input['test'] + $input['exam']) <= 44)){
+            $grade = 'E';
+        }elseif (($input['test'] + $input['exam']) >= 45 && (($input['test'] + $input['exam']) <= 49)) {
+            $grade = 'D';
+        }elseif (($input['test'] + $input['exam']) >= 50 && (($input['test'] + $input['exam']) <= 59)) {
+            $grade = 'C';
+        }elseif (($input['test'] + $input['exam']) >= 60 && (($input['test'] + $input['exam']) <= 69)) {
+            $grade = 'B';
+        }elseif (($input['test'] + $input['exam']) >= 70 && (($input['test'] + $input['exam']) <= 100)) {
+            $grade = 'A';
+        }else{
+            $grade = 'fil';
+        }
+
+        $message = ' your result for course '.$input['course_code'] .' year '.$input['session'].', '.$input['semester'].' semester is '.$input['exam'].'  in exam and '.  $input['test'].' in test therefore, your grade in this course is '.$grade;
+        // dd(env("TWILIO_SID"));
+        // dd($grade);
         $store = Result::create([
             'matric_no' => $input['matric_no'],
             'course_code' => $input['course_code'],
@@ -111,6 +131,18 @@ class ResultController extends Controller
     $client = new Client($account_sid, $auth_token);
     $client->messages->create($recipients,
             ['from' => $twilio_number, 'body' => $message] );
+    }
+
+
+    public function receiveMessage($message){
+        header("content-type: text/xml");
+
+        $response = new MessagingResponse();
+        $response->message(
+            "I'm using the Twilio PHP library to respond to this SMS!"
+        );
+
+        echo $response;
     }
 
 }
