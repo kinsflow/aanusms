@@ -55,7 +55,7 @@ class ResultController extends Controller
         }elseif (($input['test'] + $input['exam']) >= 70 && (($input['test'] + $input['exam']) <= 100)) {
             $grade = 'A';
         }else{
-            $grade = 'fil';
+            $grade = 'not defined';
         }
 
         $message = ' your result for course '.$input['course_code'] .' year '.$input['session'].', '.$input['semester'].' semester is '.$input['exam'].'  in exam and '.  $input['test'].' in test therefore, your grade in this course is '.$grade;
@@ -125,9 +125,9 @@ class ResultController extends Controller
 
     private function sendMessage($message, $recipients)
     {
-    $account_sid = 'ACb6324caf4877ebe8a3064d347a1955de';
-    $auth_token = '35c0a445a1efc2613315458463f01ff7';
-    $twilio_number = '+15138029723';
+    $account_sid = config('app.twilio_sid');
+    $auth_token =  config('app.twilio_auth');
+    $twilio_number = config('app.twilio_no');
     $client = new Client($account_sid, $auth_token);
     $client->messages->create($recipients,
             ['from' => $twilio_number, 'body' => $message] );

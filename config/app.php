@@ -13,7 +13,10 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'twilio_sid' => env('TWILIO_SID'),
+    'twilio_auth' => env('TWILIO_TOKEN'),
+    'twilio_no' => env('TWILIO_FROM'),
+     'name' => env('APP_NAME', 'Laravel'),
 
     /*
     |--------------------------------------------------------------------------
