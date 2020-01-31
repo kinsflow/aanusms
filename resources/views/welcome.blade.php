@@ -96,6 +96,9 @@
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}">Register</a>
                         @endif
+                        @if (Route::has('adminView'))
+                            <a href="{{ route('adminView') }}">admin Register</a>
+                        @endif
                     @endauth
                 </div>
             @endif
