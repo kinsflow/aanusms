@@ -22,10 +22,11 @@
                 <input type="number" class="form-control" required id="test" placeholder="Enter CA" name="test">
         </div>
         <div class="form-group">
-                <label for="exam">Course Code:</label>
+                <label for="exam">Exam Score:</label>
                 <input type="number" class="form-control" required id="exam" placeholder="Enter Exam Score" name="exam">
         </div>
         <div class="form-group">
+        <label for="session">Session:</label>
             <select class="form-control" name="session" id="session">
                 <option value="2016">2016</option>
                 <option value="2017">2017</option>
@@ -34,6 +35,7 @@
             </select>
         </div>
         <div class="form-group">
+        <label for="semester">Semester</label>
             <select class="form-control" name="semester" id="semester">
                 <option value="1">first semester</option>
                 <option value="2">second semester</option>
