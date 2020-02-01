@@ -84,7 +84,7 @@
         <div class="flex-center position-ref full-height">
             <div class="top">
             <div class="top-left">
-                <img src="{{ asset('images/eksu.png') }}" alt="eksu logo" srcset="">
+                <img src="https://admission.eksu.edu.ng/assets/images/ekiti2.png" alt="eksu logo" srcset="">
             </div>
             @if (Route::has('login'))
                 <div class="top-right links">
@@ -96,9 +96,9 @@
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}">Register</a>
                         @endif
-                        @if (Route::has('adminView'))
-                            <a href="{{ route('adminView') }}">admin Register</a>
-                        @endif
+{{--                        @if (Route::has('adminView'))--}}
+{{--                            <a href="{{ route('adminView') }}">admin Register</a>--}}
+{{--                        @endif--}}
                     @endauth
                 </div>
             @endif

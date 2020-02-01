@@ -18,9 +18,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function(){
+Route::get('/dashboard',['middleware' => 'auth', function(){
     return view('dashboard');
-});
+}]);
 
 Route::get('/adminView', function(){
     return view('adminlogin');
