@@ -84,7 +84,7 @@
         <div class="flex-center position-ref full-height">
             <div class="top">
             <div class="top-left">
-                <img src="https://admission.eksu.edu.ng/assets/images/ekiti2.png" alt="eksu logo" srcset="">
+                <img src="{{ asset('images/eksu.png') }}" alt="eksu logo" srcset="">
             </div>
             @if (Route::has('login'))
                 <div class="top-right links">
