@@ -50,7 +50,7 @@
             .top-left {
                 position: absolute;
                 left: 10px;
-                top: 18px;
+                top: 35px;
                 {{--  border-bottom: 2px solid peachpuff;  --}}
             }
 
