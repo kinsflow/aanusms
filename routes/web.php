@@ -47,6 +47,8 @@ Route::post('/registerAdmin', function(){
 
 
 Route::resource('/result', 'ResultController');
+Route::post('/uploadResult', 'ResultController@importResult')->name('uploadResult');
+
 
 Auth::routes();
 Auth::routes(['verify' => true]);

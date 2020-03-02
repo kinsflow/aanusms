@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ResultImport;
 use App\Result;
 use App\User;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Twilio\Rest\Client;
 use Twilio\TwiML\MessagingResponse;
 
@@ -34,54 +36,67 @@ class ResultController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $input = $request->all();
-        $number = User::where('matric_no', $input['matric_no'])->pluck('number')->first();
-        $recipients = '+234'.intval($number);
+
+        $number = User::where('matric_no', $request->matric_no)->pluck('number')->first();
+        $input = Result::whereMatricNo($request->matric_no)->get()->last();
+        $recipients = '+234' . intval($number);
 
         $grade = '';
-        if(($input['test'] + $input['exam']) >= 40 && (($input['test'] + $input['exam']) <= 44)){
+        if (($input['test'] + $input['exam']) >= 40 && (($input['test'] + $input['exam']) <= 44)) {
             $grade = 'E';
-        }elseif (($input['test'] + $input['exam']) >= 45 && (($input['test'] + $input['exam']) <= 49)) {
+        } elseif (($input['test'] + $input['exam']) >= 45 && (($input['test'] + $input['exam']) <= 49)) {
             $grade = 'D';
-        }elseif (($input['test'] + $input['exam']) >= 50 && (($input['test'] + $input['exam']) <= 59)) {
+        } elseif (($input['test'] + $input['exam']) >= 50 && (($input['test'] + $input['exam']) <= 59)) {
             $grade = 'C';
-        }elseif (($input['test'] + $input['exam']) >= 60 && (($input['test'] + $input['exam']) <= 69)) {
+        } elseif (($input['test'] + $input['exam']) >= 60 && (($input['test'] + $input['exam']) <= 69)) {
             $grade = 'B';
-        }elseif (($input['test'] + $input['exam']) >= 70 && (($input['test'] + $input['exam']) <= 100)) {
+        } elseif (($input['test'] + $input['exam']) >= 70 && (($input['test'] + $input['exam']) <= 100)) {
             $grade = 'A';
-        }else{
+        } else {
             $grade = 'not defined';
         }
 
-        $message = ' your result for course '.$input['course_code'] .' year '.$input['session'].', '.$input['semester'].' semester is '.$input['exam'].'  in exam and '.  $input['test'].' in test therefore, your grade in this course is '.$grade;
+        $message = ' your result for course ' . $input['course_code'] . ' year ' . $input['session'] . ', ' . $input['semester'] . ' semester is ' . $input['exam'] . '  in exam and ' . $input['test'] . ' in test therefore, your grade in this course is ' . $grade;
         // dd(env("TWILIO_SID"));
         // dd($grade);
-        $store = Result::create([
-            'matric_no' => $input['matric_no'],
-            'course_code' => $input['course_code'],
-            'test' => $input['test'],
-            'exam' => $input['exam'],
-            'session' => $input['session'],
-            'semester' => $input['semester'],
-        ]);
+//        $store = Result::create([
+//            'matric_no' => $input['matric_no'],
+//            'course_code' => $input['course_code'],
+//            'test' => $input['test'],
+//            'exam' => $input['exam'],
+//            'session' => $input['session'],
+//            'semester' => $input['semester'],
+//        ]);
 
 
-
-        if($store){
-            $this->sendMessage($message, $recipients);
-            return redirect()->back()->with('flash', 'result successfully uploaded');
+        $sent = $this->sendMessage($message, $recipients);
+        if ($sent) {
+            return redirect()->back()->with('flash', 'sms sent successfully');
         }
+        return redirect()->back()->with('flash', 'sms sent successfully');
+    }
+
+
+    /**
+     * create multiple result by using excel document to upload
+     */
+
+    public function importResult(Request $request)
+    {
+//        dd('hi');
+        Excel::import(new ResultImport, $request->file('file'));
+        return redirect()->back()->with('flash', 'record uploaded successfully');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Result  $result
+     * @param \App\Result $result
      * @return \Illuminate\Http\Response
      */
     public function show(Result $result)
@@ -92,7 +107,7 @@ class ResultController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Result  $result
+     * @param \App\Result $result
      * @return \Illuminate\Http\Response
      */
     public function edit(Result $result)
@@ -103,8 +118,8 @@ class ResultController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Result  $result
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Result $result
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Result $result)
@@ -115,7 +130,7 @@ class ResultController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Result  $result
+     * @param \App\Result $result
      * @return \Illuminate\Http\Response
      */
     public function destroy(Result $result)
@@ -125,24 +140,13 @@ class ResultController extends Controller
 
     private function sendMessage($message, $recipients)
     {
-    $account_sid = config('app.twilio_sid');
-    $auth_token =  config('app.twilio_auth');
-    $twilio_number = config('app.twilio_no');
-    $client = new Client($account_sid, $auth_token);
-    $client->messages->create($recipients,
-            ['from' => $twilio_number, 'body' => $message] );
+        $account_sid = config('app.twilio_sid');
+        $auth_token = config('app.twilio_auth');
+        $twilio_number = config('app.twilio_no');
+        $client = new Client($account_sid, $auth_token);
+        $client->messages->create($recipients,
+            ['from' => $twilio_number, 'body' => $message]);
     }
 
-
-    public function receiveMessage($message){
-        header("content-type: text/xml");
-
-        $response = new MessagingResponse();
-        $response->message(
-            "I'm using the Twilio PHP library to respond to this SMS!"
-        );
-
-        echo $response;
-    }
 
 }
