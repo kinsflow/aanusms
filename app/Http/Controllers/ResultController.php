@@ -39,11 +39,11 @@ class ResultController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($matric_no)
     {
 
-        $number = User::where('matric_no', $request->matric_no)->pluck('number')->first();
-        $input = Result::whereMatricNo($request->matric_no)->get()->last();
+        $number = User::where('matric_no', $matric_no)->pluck('number')->first();
+        $input = Result::whereMatricNo($matric_no)->get()->last();
         $recipients = '+234' . intval($number);
 
         $grade = '';
@@ -62,23 +62,10 @@ class ResultController extends Controller
         }
 
         $message = ' your result for course ' . $input['course_code'] . ' year ' . $input['session'] . ', ' . $input['semester'] . ' semester is ' . $input['exam'] . '  in exam and ' . $input['test'] . ' in test therefore, your grade in this course is ' . $grade;
-        // dd(env("TWILIO_SID"));
-        // dd($grade);
-//        $store = Result::create([
-//            'matric_no' => $input['matric_no'],
-//            'course_code' => $input['course_code'],
-//            'test' => $input['test'],
-//            'exam' => $input['exam'],
-//            'session' => $input['session'],
-//            'semester' => $input['semester'],
-//        ]);
 
 
         $sent = $this->sendMessage($message, $recipients);
-        if ($sent) {
-            return redirect()->back()->with('flash', 'sms sent successfully');
-        }
-        return redirect()->back()->with('flash', 'sms sent successfully');
+
     }
 
 
@@ -86,11 +73,21 @@ class ResultController extends Controller
      * create multiple result by using excel document to upload
      */
 
+
     public function importResult(Request $request)
     {
-//        dd('hi');
         Excel::import(new ResultImport, $request->file('file'));
-        return redirect()->back()->with('flash', 'record uploaded successfully');
+        $test_array = Excel::toArray(new ResultImport, $request->file('file'));
+        array_map(function ($test_array_element) {
+            array_map(function ($anada_array) {
+                $users = User::whereMatricNo($anada_array)->get();
+                foreach ($users as $user) {
+                    $this->store($user->matric_no);
+                }
+                echo($user);
+            }, $test_array_element);
+        }, $test_array);
+        return redirect()->back()->with('flash', 'Result Has Been Successfully Uploaded And SMS Sent Successfully');
     }
 
     /**
