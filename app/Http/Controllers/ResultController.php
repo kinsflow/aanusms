@@ -80,7 +80,7 @@ class ResultController extends Controller
         $test_array = Excel::toArray(new ResultImport, $request->file('file'));
         array_map(function ($test_array_element) {
             array_map(function ($anada_array) {
-                $users = User::whereMatricNo($anada_array)->get();
+                $users = User::whereMatricNo($anada_array[0])->get();
                 foreach ($users as $user) {
                     $this->store($user->matric_no);
                 }
